@@ -174,13 +174,48 @@ class EfficientNet(nn.Module):
         self._swish = MemoryEfficientSwish() if memory_efficient else Swish()
         for block in self._blocks:
             block.set_swish(memory_efficient)
+            
+    def cycle_spinning(self, x):
+      (batcImg,channelImg,hImg,wImg)=x.size()
+      all_shifts = [(0, 0),
+                       
+                      (1, 0, 0, 0), (0, 0, 1, 0),
+                      (1, 0, 1, 0), (1, 0, 0, 1),
+                      (0, 1, 0, 1), (0, 1, 1, 0),
+                      (0, 1, 0, 0), (0, 0, 0, 1),
+                    
+                      (2, 0, 0, 0), (0, 0, 2, 0),
+                      (2, 0, 2, 0), (2, 0, 0, 2),
+                      (0, 2, 0, 2), (0, 2, 2, 0),
+                      (0, 2, 0, 0), (0, 0, 0, 2),
 
+                      ]
+      outputs = []
+      output0 = self._conv_stem(x)
+      outputs.append(output0)
+      (batcImg0,channelImg0,hImg0,wImg0)=output0.size()
+      #print("cycle_spinning")   
+      for shift in all_shifts[1:]:
+            padded = F.pad(x, (shift[0], shift[1], shift[2], shift[3]), mode='circular')
+            (batch, channel, h, w) = padded.size()
+            output = self._conv_stem(padded)
+            #output = output[:, :, 0 + shift[2]: h - shift[3], 0 + shift[0]: w - shift[1]]
+            output = output[:, :, 0: hImg0, 0 : wImg0]
+            #print(output.size())
+            # max=torch.max(output,max)
+            outputs.append(output)
+
+      average = torch.mean(torch.stack(outputs), 0)
+
+      return average
 
     def extract_features(self, inputs):
         """ Returns output of the final convolution layer """
 
         # Stem
-        x = self._swish(self._bn0(self._conv_stem(inputs)))
+        x=self.cycle_spinning(inputs)
+        #x=self._conv_stem(inputs)
+        x = self._swish(self._bn0(x))
 
         # Blocks
         for idx, block in enumerate(self._blocks):
