@@ -177,8 +177,7 @@ class EfficientNet(nn.Module):
             
     def cycle_spinning(self, x):
       (batcImg,channelImg,hImg,wImg)=x.size()
-      all_shifts = [(0, 0),
-                       
+      all_shifts = [(0, 0),                       
                       (1, 0, 0, 0), (0, 0, 1, 0),
                       (1, 0, 1, 0), (1, 0, 0, 1),
                       (0, 1, 0, 1), (0, 1, 1, 0),
