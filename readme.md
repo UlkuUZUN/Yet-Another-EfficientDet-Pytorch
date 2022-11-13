@@ -4,5 +4,5 @@ The pytorch re-implement of the official [EfficientDet](https://github.com/googl
 
 ## Extra information for cycle-spinning please visit: https://github.com/UlkuUZUN/Cycle-Spinning-NN
 
-In the original code, the Cycle-Spinning (CS) method has been employed to the model.py file under EfficientNet folder to work with 1 and 2 shifts in the first convolution process. In our experiments it is seen that CS method employement gets good results if it works with first convolution and samll shifts up to 3 shifts.
+In the original code, the Cycle-Spinning (CS) method has been applied to the model.py file under EfficientNet folder to work with 1 and 2 shifts in the first convolution process. In our experiments it is seen that CS method employement gets good results if it works with first convolution and small shifts up to 3 shifts.
 
